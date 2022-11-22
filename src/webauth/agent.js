@@ -14,13 +14,14 @@ export default class Agent {
         return new Promise((resolve, reject) => {
             const urlHandler = (event) => {
                 NativeModules.AzureAuth.hide()
-                Linking.removeEventListener('url', urlHandler)
+                // Linking.removeEventListener('url', urlHandler)
                 resolve(event.url)
             }
             const params = Platform.OS === 'ios' ? [ephemeralSession, closeOnLoad] : [closeOnLoad]
-            Linking.addEventListener('url', urlHandler)
+            const subscribe = Linking.addEventListener('url', urlHandler)
             NativeModules.AzureAuth.showUrl(url, ...params, (err, redirectURL) => {
-                Linking.removeEventListener('url', urlHandler)
+                // Linking.removeEventListener('url', urlHandler)
+                subscribe.remove()
                 if (err) {
                     reject(err)
                 } else if(redirectURL) {
